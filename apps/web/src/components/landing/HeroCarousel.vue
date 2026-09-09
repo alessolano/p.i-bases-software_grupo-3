@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed,
+    onMounted, 
+    onUnmounted, 
+    ref } from 'vue'
 
 import hpImage from '@/assets/images/movies/hp.jpg'
 import lotrImage from '@/assets/images/movies/lotr.jpg'
@@ -33,6 +36,30 @@ const slides: CarouselSlide[] = [
   },
 ]
 
+const autoSlideInterval = 5000
+
+let intervalId: ReturnType<typeof setInterval> | undefined
+
+function startAutoSlide(): void {
+  intervalId = setInterval(() => {
+    nextSlide()
+  }, autoSlideInterval)
+}
+
+function stopAutoSlide(): void {
+  if (intervalId) {
+    clearInterval(intervalId)
+  }
+}
+
+onMounted(() => {
+  startAutoSlide()
+})
+
+onUnmounted(() => {
+  stopAutoSlide()
+})
+
 const currentIndex = ref(0)
 
 const currentSlide = computed(() => slides[currentIndex.value])
@@ -55,6 +82,14 @@ function selectSlide(index: number): void {
   <section
     class="hero-carousel"
     aria-label="Películas destacadas"
+  >
+<Transition
+  name="carousel-fade"
+  mode="out-in"
+>
+  <div
+    :key="currentIndex"
+    class="carousel-slide"
   >
     <img
       :src="currentSlide.image"
@@ -80,6 +115,8 @@ function selectSlide(index: number): void {
         Comprar boletos
       </button>
     </div>
+  </div>
+</Transition>
 
     <button
       type="button"
@@ -200,8 +237,8 @@ function selectSlide(index: number): void {
   display: grid;
   place-items: center;
 
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
 
   border: 0;
   border-radius: 50%;
@@ -248,4 +285,25 @@ function selectSlide(index: number): void {
 .indicator.active {
   background-color: var(--color-primary);
 }
+
+.carousel-slide {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-fade-enter-active,
+.carousel-fade-leave-active {
+  transition: opacity 400ms ease;
+}
+
+.carousel-fade-enter-from,
+.carousel-fade-leave-to {
+  opacity: 0;
+}
+
+.carousel-fade-enter-to,
+.carousel-fade-leave-from {
+  opacity: 1;
+}
+
 </style>
