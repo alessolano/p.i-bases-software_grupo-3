@@ -1,35 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-import hpImage from '@/assets/images/movies/hp.jpg'
-import lotrImage from '@/assets/images/movies/lotr.jpg'
-import scarfaceImage from '@/assets/images/movies/scarface.jpg'
-
-interface Movie {
-  id: number
-  title: string
-  image: string
-}
+import { getMovies } from '@/services/movie.service'
+import type { Movie } from '@/types/movie'
 
 const search = ref('')
 
-const movies: Movie[] = [
-  {
-    id: 1,
-    title: 'Harry Potter: Las Reliquias de la Muerte',
-    image: hpImage,
-  },
-  {
-    id: 2,
-    title: 'El Señor de los Anillos: El Retorno del Rey',
-    image: lotrImage,
-  },
-  {
-    id: 3,
-    title: 'Scarface',
-    image: scarfaceImage,
-  },
-]
+const movies = ref<Movie[]>([])
+
+const isLoading = ref(true)
+const errorMessage = ref('')
 
 const filteredMovies = computed(() => {
   const normalizedSearch = search.value
@@ -37,12 +17,29 @@ const filteredMovies = computed(() => {
     .toLocaleLowerCase()
 
   if (!normalizedSearch) {
-    return movies
+    return movies.value
   }
 
-  return movies.filter((movie) =>
-    movie.title.toLocaleLowerCase().includes(normalizedSearch),
+  return movies.value.filter((movie) =>
+    movie.title
+      .toLocaleLowerCase()
+      .includes(normalizedSearch),
   )
+})
+
+async function loadMovies(): Promise<void> {
+  try {
+    movies.value = await getMovies()
+  } catch {
+    errorMessage.value =
+      'No fue posible cargar las películas.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadMovies()
 })
 </script>
 
@@ -69,8 +66,22 @@ const filteredMovies = computed(() => {
       ></i>
     </div>
 
+    <p
+      v-if="isLoading"
+      class="status-message"
+    >
+      Cargando películas...
+    </p>
+
+    <p
+      v-else-if="errorMessage"
+      class="status-message error-message"
+    >
+      {{ errorMessage }}
+    </p>
+
     <div
-      v-if="filteredMovies.length"
+      v-else-if="filteredMovies.length"
       class="movie-grid"
     >
       <article
@@ -79,7 +90,7 @@ const filteredMovies = computed(() => {
         class="movie-card"
       >
         <img
-          :src="movie.image"
+          :src="movie.posterUrl"
           :alt="movie.title"
           class="movie-poster"
         />
@@ -92,7 +103,7 @@ const filteredMovies = computed(() => {
 
     <p
       v-else
-      class="empty-message"
+      class="status-message"
     >
       No encontramos películas que coincidan con tu búsqueda.
     </p>
@@ -191,11 +202,15 @@ const filteredMovies = computed(() => {
   text-align: center;
 }
 
-.empty-message {
+.status-message {
   margin: 48px 0;
 
   color: var(--color-gray);
 
   text-align: center;
+}
+
+.error-message {
+  color: var(--color-primary);
 }
 </style>
