@@ -20,3 +20,9 @@ CREATE TABLE LANGUAGES
     code VARCHAR(2) NOT NULL,
 );
 
+CREATE TABLE INVOICE_PRODUCTS
+(
+    invoice_id NUMBER NOT NULL,
+    product_id NUMBER NOT NULL,
+    CONSTRAINT invoice_products_pk PRIMARY KEY (invoice_id, product_id),
+);
