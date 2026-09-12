@@ -2,7 +2,11 @@ CREATE TABLE cinemas
 (
     cinema_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    companies_id NUMBER NOT NULL,
+    CONSTRAINT fk_cinemas_companies FOREIGN KEY (companies_id) REFERENCES companies(companies_id)
 );
+
+
 
 CREATE TABLE movies
 (
