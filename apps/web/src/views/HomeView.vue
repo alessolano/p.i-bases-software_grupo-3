@@ -3,7 +3,6 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 
 import HeroCarousel from '@/components/landing/HeroCarousel.vue'
-import BranchSelector from '@/components/landing/BranchSelector.vue'
 import MovieCatalog from '@/components/landing/MovieCatalog.vue'
 </script>
 
@@ -14,7 +13,6 @@ import MovieCatalog from '@/components/landing/MovieCatalog.vue'
     <div class="landing-container home-content">
       <HeroCarousel />
 
-      <BranchSelector />
 
       <MovieCatalog />
     </div>
