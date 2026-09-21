@@ -35,13 +35,6 @@
         <a href="#">Políticas de reembolso</a>
         <a href="#">Aviso de privacidad</a>
       </section>
-
-      <section>
-        <h2>EVENTOS</h2>
-
-        <a href="#">Eventos privados</a>
-        <a href="#">Eventos corporativos</a>
-      </section>
     </div>
   </footer>
 </template>
