@@ -14,11 +14,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install Dependencies
+      - name: Install Dependencies (API)
+        working-directory: apps/api
         run: npm ci --ignore-scripts
+
+      - name: Install Dependencies (Web)
+        working-directory: apps/web
+        run: npm ci --ignore-scripts
+
       - name: Build Backend (API)
         working-directory: apps/api
         run: npm run build
+
       - name: Build Frontend (Web)
         working-directory: apps/web
         run: npm run build
