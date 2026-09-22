@@ -8,8 +8,14 @@ import { createApp } from 'vue'
 
 import App from './App.vue'
 import router from './router'
+//VUE3 google lib copyright devbaji "https://github.com/devbaji/vue3-google-login"
+import vue3GoogleLogin from 'vue3-google-login'
 
 const app = createApp(App)
+
+app.use(vue3GoogleLogin, {
+  clientId: '913566706796-cg960qafeugmdcti1dnp8q95j1jo98lt.apps.googleusercontent.com'
+})
 
 app.use(router)
 
