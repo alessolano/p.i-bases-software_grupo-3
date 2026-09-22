@@ -1,23 +1,15 @@
 <script setup lang="ts">
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
-
-import HeroCarousel from '@/components/landing/HeroCarousel.vue'
-import MovieCatalog from '@/components/landing/MovieCatalog.vue'
 </script>
 
 <template>
   <AppHeader />
-
   <main>
     <div class="landing-container home-content">
-      <HeroCarousel />
-
-
-      <MovieCatalog />
+        <h1>Oops, no hay nada aqui. Estamos trabajando en ello.</h1>
     </div>
   </main>
-
   <AppFooter />
 </template>
 
