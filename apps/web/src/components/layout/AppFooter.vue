@@ -24,16 +24,15 @@
         <h2>CARTELERA</h2>
 
         <a href="#">Ver cartelera</a>
-        <a href="#">Preventas</a>
-        <a href="#">Estrenos</a>
+        <a href="place-holder">Preventas</a>
+        <a href="place-holder">Estrenos</a>
       </section>
 
       <section>
         <h2>SOBRE CINETADEL</h2>
-
-        <a href="#">Términos y condiciones</a>
-        <a href="#">Políticas de reembolso</a>
-        <a href="#">Aviso de privacidad</a>
+        <router-link to="/terms-and-conditions">Términos y condiciones</router-link>
+        <router-link to="/refund-policy">Política de reembolso</router-link>
+        <router-link to="/privacy-policy">Aviso de Privacidad</router-link>
       </section>
     </div>
   </footer>
