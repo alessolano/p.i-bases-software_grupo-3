@@ -17,9 +17,7 @@ import GoogleButton from '@/components/Google/GoogleButton.vue'
 
       <MovieCatalog />
     </div>
-    <div>
-      <GoogleButton />
-    </div>
+
   </main>
 
   <AppFooter />
