@@ -8,7 +8,14 @@ describe('HealthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
-      providers: [HealthService],
+      providers: [
+        {
+          provide: HealthService,
+          useValue: {
+            checkDatabaseConnection: jest.fn().mockResolvedValue(true),
+          },
+        }
+      ],
     }).compile();
 
     controller = module.get<HealthController>(HealthController);
