@@ -85,10 +85,12 @@ jobs:
             cd apps/api
             npm ci
             npm run build
-            pm2 restart api || pm2 start npm --name api -- run start:prod
 
             cd ../web
             npm ci
             npm run build
+
+            sudo systemctl restart cinetadel-api.service
+            sudo systemctl --no-pager --full status cinetadel-api.service
 
 
