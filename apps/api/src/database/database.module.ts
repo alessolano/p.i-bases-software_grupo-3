@@ -2,6 +2,7 @@ import { Global, Module, OnApplicationShutdown, Inject } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import oracle from 'oracledb';
 import { DatabaseController } from './database.controller';
+import { DatabaseService } from './database.service';
 
 export const ORACLE_POOL = 'ORACLE_POOL';
 
@@ -10,6 +11,7 @@ export const ORACLE_POOL = 'ORACLE_POOL';
   imports: [ConfigModule],
   controllers: [DatabaseController],
   providers: [
+    DatabaseService,
     {
       provide: ORACLE_POOL,
       inject: [ConfigService],
