@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { HealthRepository } from './health.repository/health.repository';
 
 @Injectable()
 export class HealthService {
+  constructor(private readonly healthRepository: HealthRepository) {}
+
   findAll() {
-    return `This action returns all health`;
+    return this.healthRepository.checkDatabaseConnection();
   }
 }
