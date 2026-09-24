@@ -6,31 +6,12 @@ import logo from '@/assets/logos/cinetadel-logo.png'
   <header class="site-header">
     <nav class="landing-container navbar-content">
       <RouterLink
-        to="/"
-        class="brand"
-        aria-label="Ir a la página principal de Cinetadel"
-      >
-        <img
-          :src="logo"
-          alt="Cinetadel"
-          class="brand-logo"
-        />
+        to="/" class="brand" aria-label="Ir a la página principal de Cinetadel">
+        <img :src="logo" alt="Cinetadel" class="brand-logo"/>
       </RouterLink>
-
       <div class="navbar-actions">
-        <button
-          type="button"
-          class="btn login-button"
-        >
-          Iniciar sesión
-        </button>
-
-        <button
-          type="button"
-          class="btn register-button"
-        >
-          Registrarse
-        </button>
+        <button type="button" class="login-button">Iniciar sesión</button>
+        <button type="button" class="register-button">Registrarse</button>
       </div>
     </nav>
   </header>
@@ -44,9 +25,8 @@ import logo from '@/assets/logos/cinetadel-logo.png'
 
 .navbar-content {
   min-height: 72px;
-
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
 
   gap: 24px;
@@ -66,29 +46,22 @@ import logo from '@/assets/logos/cinetadel-logo.png'
 
 .navbar-actions {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: stretch;
+  gap: 0;
 }
 
-.login-button {
-  color: var(--color-white);
-  background-color: var(--color-medium_gray);
-  border-color: var(--color-dark);
+.register-button, .login-button {
+  color: inherit;
+  background-color: transparent;
+  border: none;
+  box-sizing: border-box;
+  padding: 30px;
+  font-weight: 700;
 }
 
-.login-button:hover {
+.register-button:hover, .login-button:hover {
   color: var(--color-white);
-  background-color: var(--color-dark);
-}
-
-.register-button {
-  color: var(--color-white);
-  background-color: var(--color-primary);
-}
-
-.register-button:hover {
-  color: var(--color-white);
-  background-color: var(--color-secondary);
+  background-color: #36080C;
 }
 
 @media (max-width: 576px) {
@@ -106,8 +79,12 @@ import logo from '@/assets/logos/cinetadel-logo.png'
   }
 
   .navbar-actions .btn {
-    padding: 6px 9px;
-    font-size: 0.8rem;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    width: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0;
   }
 }
 </style>

@@ -88,6 +88,7 @@ function selectSlide(index: number): void {
   mode="out-in"
 >
   <div
+    v-if="currentSlide"
     :key="currentIndex"
     class="carousel-slide"
   >
