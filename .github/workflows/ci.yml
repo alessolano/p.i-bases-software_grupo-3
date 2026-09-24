@@ -46,7 +46,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [build, lint]
+    needs: [ci, sonarqube]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
