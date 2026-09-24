@@ -7,7 +7,7 @@ const initOptions: oracle.InitialiseOptions = {
   configDir: path.resolve(__dirname, '../Wallet'),
 };
 
-if (!process.env.ORACLE_CLIENT_LIB_DIR) {
+if (process.env.ORACLE_CLIENT_LIB_DIR) {
   initOptions.libDir = process.env.ORACLE_CLIENT_LIB_DIR;
 }
 
