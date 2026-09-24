@@ -64,5 +64,32 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
 
+  deploy:
+    name: Deploy
+    needs: [build, lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and serve
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          script: |
+            set -euo pipefail
+            cd /opt/app/p.i-bases-software_grupo-3
+            git fetch origin main
+
+            cd apps/api
+            npm ci
+            npm run build
+
+            cd ../web
+            npm ci
+            npm run build
+
+            sudo systemctl restart cinetadel-api.service
+            sudo systemctl --no-pager --full status cinetadel-api.service
 
 
