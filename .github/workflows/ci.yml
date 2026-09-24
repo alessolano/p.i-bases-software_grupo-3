@@ -31,6 +31,7 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
+
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
