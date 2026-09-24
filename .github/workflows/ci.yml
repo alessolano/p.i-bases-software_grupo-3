@@ -6,48 +6,31 @@ on:
     branches: [ "main", "dev" ]
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [api, web]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - name: Install Dependencies (API)
-        working-directory: apps/api
-        run: npm ci --ignore-scripts
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: apps/${{ matrix.app }}/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run build
 
-      - name: Install Dependencies (Web)
-        working-directory: apps/web
-        run: npm ci --ignore-scripts
-
-      - name: Build Backend (API)
-        working-directory: apps/api
-        run: npm run build
-
-      - name: Build Frontend (Web)
-        working-directory: apps/web
-        run: npm run build
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Linter Backend (API)
-        working-directory: apps/api
-        run: |
-          npm ci
-          npm run lint
-
-      - name: Linter Frontend (Web)
-        working-directory: apps/web
-        run: |
-          npm ci
-          npm run lint
 
   sonarqube:
     name: SonarQube
