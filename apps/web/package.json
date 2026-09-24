@@ -8,7 +8,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "test:cov": "vitest run --coverage",
+    "test:cov": "vitest run --coverage.enabled --coverage.provider=v8 --coverage.reporter=text --coverage.reporter=lcov --coverage.reportsDirectory=./coverage --coverage.reportOnFailure",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint .",
