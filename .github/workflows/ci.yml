@@ -50,19 +50,16 @@ jobs:
           npm run lint
 
   sonarqube:
+    name: SonarQube
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting.
-          fetch-depth: 0
-
-      # Triggering SonarQube analysis as results of it are required by Quality Gate check.
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@ba9859eae8dd6bd29e412f25ddbbef3d032000f4
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
 
   deploy:
     name: Deploy
