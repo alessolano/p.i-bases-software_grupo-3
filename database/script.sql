@@ -135,8 +135,6 @@ CREATE TABLE Invoices (
         CHECK (total >= 0)
 );
 
--- TODO(Diego): faltan FKs a Invoices/Products (no existen aun),
--- falta refere
 CREATE TABLE Invoice_products
 (
     invoice_id NUMBER NOT NULL,
