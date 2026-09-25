@@ -25,7 +25,7 @@ describe('createOraclePool', () => {
         ({
           DB_USER: 'user',
           DB_PASSWORD: 'pass',
-          DB_CONNECTION_STRING: 'db.example.com/xepdb1',
+          DB_CONNECTION_STRING: 'db.example.com/aasasa',
         })[key],
       ),
     } as unknown as ConfigService;
