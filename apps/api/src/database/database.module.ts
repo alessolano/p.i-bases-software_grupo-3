@@ -4,6 +4,19 @@ import oracle from 'oracledb';
 import { DatabaseController } from './database.controller';
 import { DatabaseService } from './database.service';
 
+export async function createOraclePool(configService: ConfigService) {
+  oracle.outFormat = oracle.OUT_FORMAT_OBJECT;
+
+  return oracle.createPool({
+    user: configService.getOrThrow<string>('DB_USER'),
+    password: configService.getOrThrow<string>('DB_PASSWORD'),
+    connectString: configService.getOrThrow<string>('DB_CONNECTION_STRING'),
+    poolMin: 2,
+    poolMax: 10,
+    poolIncrement: 1,
+  });
+}
+
 export const ORACLE_POOL = 'ORACLE_POOL';
 
 @Global()
@@ -15,18 +28,7 @@ export const ORACLE_POOL = 'ORACLE_POOL';
     {
       provide: ORACLE_POOL,
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        oracle.outFormat = oracle.OUT_FORMAT_OBJECT;
-
-        return oracle.createPool({
-          user: configService.getOrThrow<string>('DB_USER'),
-          password: configService.getOrThrow<string>('DB_PASSWORD'),
-          connectString: configService.getOrThrow<string>('DB_CONNECTION_STRING'),
-          poolMin: 2,
-          poolMax: 10,
-          poolIncrement: 1,
-        });
-      },
+      useFactory: createOraclePool,
     },
   ],
   exports: [ORACLE_POOL],
