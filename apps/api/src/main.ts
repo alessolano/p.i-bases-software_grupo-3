@@ -20,7 +20,6 @@ export function initOracleClient(): void {
   try {
     const initOptions = buildOracleInitOptions();
     oracle.initOracleClient(initOptions);
-    console.log('Oracle client initialized successfully.');
   } catch (error) {
     console.error('Error initializing Oracle client:', error);
     process.exit(1);
