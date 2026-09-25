@@ -9,7 +9,10 @@ import {
 export class CreateUserBaseDto {
   @IsDefined({ message: 'El correo electrónico es obligatorio.' })
   @IsString({ message: 'El correo electrónico debe ser texto.' })
-  @IsEmail({}, { message: 'El correo electrónico debe tener un formato válido.' })
+  @IsEmail(
+    {},
+    { message: 'El correo electrónico debe tener un formato válido.' },
+  )
   email: string;
 
   @IsDefined({ message: 'El primer nombre es obligatorio.' })
