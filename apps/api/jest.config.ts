@@ -24,7 +24,7 @@ const config: Config = {
     'apps/**/*.(t|j)s',
     '!src/**/*.spec.ts',
     '!src/app.module.ts',
-    '!src/health.module.ts',
+    '!src/health/health.module.ts',
   ],
   coverageDirectory: './coverage',
   testEnvironment: 'node',
