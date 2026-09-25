@@ -46,21 +46,27 @@ describe('CreateClientDto', () => {
     }
   });
 
-  it.each(['ADMIN', 'EMPLOYEE', 'SUPERADMIN', 'client', 1, undefined, null])(
-    'rejects an unsupported or missing role %p',
-    async (role) => {
-      const errors = await validatePayload({ ...validPayload, role });
+  it.each([
+    'ADMINISTRATOR',
+    'ADMIN',
+    'EMPLOYEE',
+    'SUPERADMIN',
+    'client',
+    1,
+    undefined,
+    null,
+  ])('rejects an unsupported or missing role %p', async (role) => {
+    const errors = await validatePayload({ ...validPayload, role });
 
-      expect(errors).toEqual([
-        expect.objectContaining({
-          property: 'role',
-          constraints: expect.objectContaining({
-            isIn: 'El rol debe ser cliente.',
-          }),
+    expect(errors).toEqual([
+      expect.objectContaining({
+        property: 'role',
+        constraints: expect.objectContaining({
+          isIn: 'El rol debe ser cliente.',
         }),
-      ]);
-    },
-  );
+      }),
+    ]);
+  });
 
   it.each(['firstSurname', 'secondSurname', 'phoneNumber'])(
     'rejects non-string values for %s',
@@ -128,6 +134,86 @@ describe('CreateClientDto', () => {
       ).resolves.toEqual([]);
     },
   );
+
+  it('normalizes client email before applying inherited validation', async () => {
+    const client = plainToInstance(CreateClientDto, {
+      ...validPayload,
+      email: 'Persona@Example.COM',
+    });
+    await expect(validate(client)).resolves.toEqual([]);
+    expect(client.email).toBe('persona@example.com');
+  });
+
+  it.each([123, false, [], {}, null, undefined])(
+    'rejects a non-string email without coercion: %p',
+    async (email) => {
+      const client = plainToInstance(CreateClientDto, {
+        ...validPayload,
+        email,
+      });
+      expect(client.email).toEqual(email);
+      const errors = await validate(client);
+      expect(errors.map((error) => error.property)).toEqual(['email']);
+    },
+  );
+
+  it.each([
+    ['firstSurname', 100],
+    ['secondSurname', 100],
+    ['phoneNumber', 20],
+  ] as const)('enforces the byte limit for %s', async (field, limit) => {
+    for (const value of [
+      'a'.repeat(limit),
+      'á'.repeat(limit / 2),
+      '🎬'.repeat(limit / 4),
+    ]) {
+      await expect(
+        validatePayload({ ...validPayload, [field]: value }),
+      ).resolves.toEqual([]);
+      const errors = await validatePayload({
+        ...validPayload,
+        [field]: value + 'a',
+      });
+      expect(errors).toEqual([
+        expect.objectContaining({
+          property: field,
+          constraints: { maxUtf8Bytes: expect.any(String) },
+        }),
+      ]);
+    }
+  });
+
+  it('leaves an omitted language undefined for the database default', async () => {
+    const client = plainToInstance(CreateClientDto, validPayload);
+    await expect(validate(client)).resolves.toEqual([]);
+    expect(client.language).toBeUndefined();
+  });
+
+  it.each([undefined, 'es', 'en', 'es-CR', 'áéa'])(
+    'accepts an omitted or valid language %p',
+    async (language) => {
+      await expect(
+        validatePayload({ ...validPayload, language }),
+      ).resolves.toEqual([]);
+    },
+  );
+
+  it.each([
+    null,
+    '',
+    '   ',
+    '\t\n',
+    123,
+    false,
+    [],
+    {},
+    'abcdef',
+    'áéá',
+    '\uD800',
+  ])('rejects an invalid language %p', async (language) => {
+    const errors = await validatePayload({ ...validPayload, language });
+    expect(errors.map((error) => error.property)).toEqual(['language']);
+  });
 
   it.each([
     ['email', 'invalid-email'],

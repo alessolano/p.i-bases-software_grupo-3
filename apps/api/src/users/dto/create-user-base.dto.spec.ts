@@ -17,7 +17,7 @@ describe('CreateUserBaseDto', () => {
     await expect(validatePayload(validPayload)).resolves.toEqual([]);
   });
 
-  it.each(['ADMIN', 'EMPLOYEE', 'CLIENT'])(
+  it.each(['ADMINISTRATOR', 'EMPLOYEE', 'CLIENT'])(
     'accepts the role %s',
     async (role) => {
       await expect(validatePayload({ ...validPayload, role })).resolves.toEqual(
@@ -43,11 +43,12 @@ describe('CreateUserBaseDto', () => {
     '',
     '   ',
     'admin',
+    'ADMIN',
     'SUPERADMIN',
     1,
     false,
-    ['ADMIN'],
-    { role: 'ADMIN' },
+    ['ADMINISTRATOR'],
+    { role: 'ADMINISTRATOR' },
   ])('rejects an invalid role %p with a Spanish message', async (role) => {
     const errors = await validatePayload({ ...validPayload, role });
 
@@ -115,6 +116,83 @@ describe('CreateUserBaseDto', () => {
           constraints: {
             isEmail: 'El correo electrónico debe tener un formato válido.',
           },
+        }),
+      ]);
+    },
+  );
+
+  it.each(['firstName', 'secondName'])(
+    'enforces the UTF-8 byte limit for %s',
+    async (field) => {
+      for (const value of ['a'.repeat(100), 'á'.repeat(50), '🎬'.repeat(25)]) {
+        await expect(
+          validatePayload({ ...validPayload, [field]: value }),
+        ).resolves.toEqual([]);
+
+        const errors = await validatePayload({
+          ...validPayload,
+          [field]: value + 'a',
+        });
+        expect(errors).toEqual([
+          expect.objectContaining({
+            property: field,
+            constraints: expect.objectContaining({
+              maxUtf8Bytes: expect.any(String),
+            }),
+          }),
+        ]);
+      }
+    },
+  );
+
+  it('enforces the 150-byte email limit independently of valid email syntax', async () => {
+    const domain = 'b'.repeat(63) + '.' + 'c'.repeat(30) + '.com';
+    const email = 'a'.repeat(51) + '@' + domain;
+
+    await expect(validatePayload({ ...validPayload, email })).resolves.toEqual(
+      [],
+    );
+    const errors = await validatePayload({
+      ...validPayload,
+      email: 'a' + email,
+    });
+    expect(errors).toEqual([
+      expect.objectContaining({
+        property: 'email',
+        constraints: { maxUtf8Bytes: expect.any(String) },
+      }),
+    ]);
+  });
+
+  it.each(['email', 'firstName', 'secondName'])(
+    'rejects malformed Unicode in %s',
+    async (field) => {
+      const errors = await validatePayload({
+        ...validPayload,
+        [field]: '\uD800',
+      });
+      expect(errors).toEqual([
+        expect.objectContaining({
+          property: field,
+          constraints: expect.objectContaining({
+            maxUtf8Bytes: expect.any(String),
+          }),
+        }),
+      ]);
+    },
+  );
+
+  it.each(['a\uD800@example.com', 'a@example\uDC00.com'])(
+    'rejects malformed Unicode in either part of an email: %p',
+    async (email) => {
+      const errors = await validatePayload({ ...validPayload, email });
+      expect(errors).toEqual([
+        expect.objectContaining({
+          property: 'email',
+          constraints: expect.objectContaining({
+            isEmail: expect.any(String),
+            maxUtf8Bytes: expect.any(String),
+          }),
         }),
       ]);
     },

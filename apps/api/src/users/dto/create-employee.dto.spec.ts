@@ -19,11 +19,14 @@ describe('CreateEmployeeDto', () => {
   const validatePayload = (payload: Record<string, unknown>) =>
     validate(plainToInstance(CreateEmployeeDto, payload));
 
-  it.each(['ADMIN', 'EMPLOYEE'])('accepts a valid %s profile', async (role) => {
-    await expect(validatePayload({ ...validPayload, role })).resolves.toEqual(
-      [],
-    );
-  });
+  it.each(['ADMINISTRATOR', 'EMPLOYEE'])(
+    'accepts a valid %s profile',
+    async (role) => {
+      await expect(validatePayload({ ...validPayload, role })).resolves.toEqual(
+        [],
+      );
+    },
+  );
 
   it.each([undefined, null, 'Carlos'])(
     'keeps the second name optional with value %p',
@@ -34,7 +37,7 @@ describe('CreateEmployeeDto', () => {
     },
   );
 
-  it.each(['CLIENT', 'SUPERADMIN', 'admin', 1, undefined, null])(
+  it.each(['CLIENT', 'ADMIN', 'SUPERADMIN', 'admin', 1, undefined, null])(
     'rejects an unsupported or missing role %p',
     async (role) => {
       const errors = await validatePayload({ ...validPayload, role });
@@ -89,7 +92,7 @@ describe('CreateEmployeeDto', () => {
   it('requires a branch for administrators too', async () => {
     const errors = await validatePayload({
       ...validPayload,
-      role: 'ADMIN',
+      role: 'ADMINISTRATOR',
       branchId: undefined,
     });
 
@@ -153,6 +156,41 @@ describe('CreateEmployeeDto', () => {
       }
     },
   );
+
+  it.each([
+    ['firstSurname', 100],
+    ['secondSurname', 100],
+    ['phoneNumber', 20],
+  ] as const)('enforces the byte limit for %s', async (field, limit) => {
+    for (const value of [
+      'a'.repeat(limit),
+      'á'.repeat(limit / 2),
+      '🎬'.repeat(limit / 4),
+    ]) {
+      await expect(
+        validatePayload({ ...validPayload, [field]: value }),
+      ).resolves.toEqual([]);
+      const errors = await validatePayload({
+        ...validPayload,
+        [field]: value + 'a',
+      });
+      expect(errors).toEqual([
+        expect.objectContaining({
+          property: field,
+          constraints: { maxUtf8Bytes: expect.any(String) },
+        }),
+      ]);
+    }
+  });
+
+  it('preserves the casing of employee email addresses', async () => {
+    const employee = plainToInstance(CreateEmployeeDto, {
+      ...validPayload,
+      email: 'Persona@Example.com',
+    });
+    await expect(validate(employee)).resolves.toEqual([]);
+    expect(employee.email).toBe('Persona@Example.com');
+  });
 
   it.each([
     ['email', 'invalid-email'],

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsDateString,
   IsIn,
@@ -8,7 +9,9 @@ import {
   Matches,
   Max,
   Min,
+  ValidateIf,
 } from 'class-validator';
+import { MaxUtf8Bytes } from '../../common/validation/max-utf8-bytes.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { CreateUserBaseDto } from './create-user-base.dto';
 
@@ -18,12 +21,21 @@ export class CreateClientDto extends CreateUserBaseDto {
   })
   declare role: UserRole.CLIENT;
 
+  @Transform(
+    ({ value }: { value: unknown }) =>
+      typeof value === 'string' ? value.toLowerCase() : value,
+    { toClassOnly: true },
+  )
+  declare email: string;
+
   @IsOptional()
   @IsString({ message: 'El primer apellido debe ser texto.' })
+  @MaxUtf8Bytes(100)
   firstSurname?: string | null;
 
   @IsOptional()
   @IsString({ message: 'El segundo apellido debe ser texto.' })
+  @MaxUtf8Bytes(100)
   secondSurname?: string | null;
 
   @IsOptional()
@@ -41,6 +53,7 @@ export class CreateClientDto extends CreateUserBaseDto {
 
   @IsOptional()
   @IsString({ message: 'El teléfono debe ser texto.' })
+  @MaxUtf8Bytes(20)
   phoneNumber?: string | null;
 
   @IsOptional()
@@ -54,4 +67,12 @@ export class CreateClientDto extends CreateUserBaseDto {
     message: 'El identificador de la dirección está fuera del rango admitido.',
   })
   addressId?: number | null;
+
+  @ValidateIf((_object: unknown, value: unknown) => value !== undefined)
+  @IsString({ message: 'El idioma debe ser texto.' })
+  @Matches(/\S/u, {
+    message: 'El idioma no puede estar vacío ni contener solo espacios.',
+  })
+  @MaxUtf8Bytes(5)
+  language?: string;
 }

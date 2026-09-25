@@ -9,14 +9,15 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { MaxUtf8Bytes } from '../../common/validation/max-utf8-bytes.decorator';
 import { UserRole } from '../enums/user-role.enum';
 import { CreateUserBaseDto } from './create-user-base.dto';
 
 export class CreateEmployeeDto extends CreateUserBaseDto {
-  @IsIn([UserRole.ADMIN, UserRole.EMPLOYEE], {
+  @IsIn([UserRole.ADMINISTRATOR, UserRole.EMPLOYEE], {
     message: 'El rol debe ser administrador o empleado.',
   })
-  declare role: UserRole.ADMIN | UserRole.EMPLOYEE;
+  declare role: UserRole.ADMINISTRATOR | UserRole.EMPLOYEE;
 
   @IsDefined({ message: 'El primer apellido es obligatorio.' })
   @IsString({ message: 'El primer apellido debe ser texto.' })
@@ -24,6 +25,7 @@ export class CreateEmployeeDto extends CreateUserBaseDto {
     message:
       'El primer apellido no puede estar vacío ni contener solo espacios.',
   })
+  @MaxUtf8Bytes(100)
   firstSurname: string;
 
   @IsDefined({ message: 'El segundo apellido es obligatorio.' })
@@ -32,6 +34,7 @@ export class CreateEmployeeDto extends CreateUserBaseDto {
     message:
       'El segundo apellido no puede estar vacío ni contener solo espacios.',
   })
+  @MaxUtf8Bytes(100)
   secondSurname: string;
 
   @IsDefined({ message: 'La fecha de nacimiento es obligatoria.' })
@@ -52,6 +55,7 @@ export class CreateEmployeeDto extends CreateUserBaseDto {
   @Matches(/\S/u, {
     message: 'El teléfono no puede estar vacío ni contener solo espacios.',
   })
+  @MaxUtf8Bytes(20)
   phoneNumber: string;
 
   @IsDefined({ message: 'El identificador de la dirección es obligatorio.' })
