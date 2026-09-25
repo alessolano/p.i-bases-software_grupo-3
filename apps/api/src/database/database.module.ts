@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { DatabaseService } from './database.service';
 
-@Global() // disponible en toda la app sin imports
+@Global()  // Global disponibility
 @Module({
   providers: [DatabaseService],
   exports: [DatabaseService],
