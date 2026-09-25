@@ -1,12 +1,20 @@
 import {
   IsDefined,
   IsEmail,
+  IsEnum,
   IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
+import { UserRole } from '../enums/user-role.enum';
 
 export class CreateUserBaseDto {
+  @IsDefined({ message: 'El rol es obligatorio.' })
+  @IsEnum(UserRole, {
+    message: 'El rol debe ser administrador, empleado o cliente.',
+  })
+  role: UserRole;
+
   @IsDefined({ message: 'El correo electrónico es obligatorio.' })
   @IsString({ message: 'El correo electrónico debe ser texto.' })
   @IsEmail(

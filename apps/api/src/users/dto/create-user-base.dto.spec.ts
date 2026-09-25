@@ -5,6 +5,7 @@ import { CreateUserBaseDto } from './create-user-base.dto';
 
 describe('CreateUserBaseDto', () => {
   const validPayload = {
+    role: 'CLIENT',
     email: 'cliente@example.com',
     firstName: 'José María',
   };
@@ -14,6 +15,50 @@ describe('CreateUserBaseDto', () => {
 
   it('accepts valid required fields without a second name', async () => {
     await expect(validatePayload(validPayload)).resolves.toEqual([]);
+  });
+
+  it.each(['ADMIN', 'EMPLOYEE', 'CLIENT'])(
+    'accepts the role %s',
+    async (role) => {
+      await expect(validatePayload({ ...validPayload, role })).resolves.toEqual(
+        [],
+      );
+    },
+  );
+
+  it.each([undefined, null])('rejects a missing role %p', async (role) => {
+    const errors = await validatePayload({ ...validPayload, role });
+
+    expect(errors).toEqual([
+      expect.objectContaining({
+        property: 'role',
+        constraints: expect.objectContaining({
+          isDefined: 'El rol es obligatorio.',
+        }),
+      }),
+    ]);
+  });
+
+  it.each([
+    '',
+    '   ',
+    'admin',
+    'SUPERADMIN',
+    1,
+    false,
+    ['ADMIN'],
+    { role: 'ADMIN' },
+  ])('rejects an invalid role %p with a Spanish message', async (role) => {
+    const errors = await validatePayload({ ...validPayload, role });
+
+    expect(errors).toEqual([
+      expect.objectContaining({
+        property: 'role',
+        constraints: {
+          isEnum: 'El rol debe ser administrador, empleado o cliente.',
+        },
+      }),
+    ]);
   });
 
   it.each([undefined, null, '', 'Lucía'])(
