@@ -1,3 +1,7 @@
+*.png
+*.svg
+*.jpg
+*.jpeg
 # compiled output
 /dist
 /node_modules
