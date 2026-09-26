@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import * as oracledb from 'oracledb';
 
 @Injectable()
