@@ -58,7 +58,8 @@ async function onSubmit() {
 
   loading.value = true
   try {
-    const { confirmPassword, ...payload } = form
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmPassword , ...payload } = form
     await registerUser(payload)
     emit('registered')
     emit('close')
