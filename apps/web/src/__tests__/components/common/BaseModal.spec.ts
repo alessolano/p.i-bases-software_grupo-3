@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import BaseModal from '@/components/common/BaseModal.vue'
 
@@ -33,6 +33,8 @@ describe('BaseModal.vue', () => {
   })
 
   it('emite close al presionar la tecla Escape y limpia listener al desmontar', async () => {
+    const removeListenerSpy = vi.spyOn(window, 'removeEventListener')
+
     const wrapper = mount(BaseModal, {
       props: { open: true, title: 'Test' },
       global: { stubs: { Teleport: true } },
@@ -45,8 +47,7 @@ describe('BaseModal.vue', () => {
     expect(wrapper.emitted('close')).toBeTruthy()
 
     wrapper.unmount()
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    expect(wrapper.emitted('close')).toHaveLength(1)
+    expect(removeListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function))
   })
 
   it('emite close al hacer click sobre el backdrop', async () => {
