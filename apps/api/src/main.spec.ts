@@ -57,6 +57,7 @@ describe('test the functions from main.ts', () => {
   describe('function bootstrap', () => {
     const createMockApp = () => ({
       enableShutdownHooks: jest.fn(),
+      setGlobalPrefix: jest.fn(),
       listen: jest.fn().mockResolvedValue(undefined),
     });
 
@@ -68,6 +69,7 @@ describe('test the functions from main.ts', () => {
 
       expect(NestFactory.create).toHaveBeenCalledWith(AppModule);
       expect(app.enableShutdownHooks).toHaveBeenCalled();
+      expect(app.setGlobalPrefix).toHaveBeenCalledWith('api');
       expect(app.listen).toHaveBeenCalledWith(3000);
     });
 
