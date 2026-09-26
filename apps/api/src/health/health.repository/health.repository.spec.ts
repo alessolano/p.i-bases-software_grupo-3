@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthRepository } from './health.repository';
 import { ORACLE_POOL } from '../../database/database.module';
+import { Logger } from '@nestjs/common';
 
 describe('HealthRepository', () => {
   let provider: HealthRepository;
@@ -39,21 +40,20 @@ describe('HealthRepository', () => {
     });
 
     it('should return false when the database connection fails', async () => {
-      const consoleError = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined);
+      const loggerErrorMock = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+      const dbError = new Error('Database error');
       const mockConnection = {
-        execute: jest.fn().mockRejectedValue(new Error('Database error')),
+        execute: jest.fn().mockRejectedValue(dbError),
         close: jest.fn(),
       };
       (provider as any).oraclePool.getConnection = jest.fn().mockResolvedValue(mockConnection);
       const result = await provider.checkDatabaseConnection();
       expect(result).toBe(false);
-      expect(consoleError).toHaveBeenCalledWith(
-        'Error checking database connection:',
-        expect.any(Error),
+      expect(loggerErrorMock).toHaveBeenCalledWith(
+        'Error checking database connection',
+        dbError,
       );
-      consoleError.mockRestore();
+      loggerErrorMock.mockRestore();
     });
   });
 });
